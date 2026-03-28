@@ -7,9 +7,13 @@ import os
 from dotenv import load_dotenv
 
 # ══════════════════════════════════════════
-#  CONFIGURAÇÃO
+#  CONFIGURAÇÃO PARA 24 HORAS
 # ══════════════════════════════════════════
-TOKEN  = os.getenv("MTQ4Njg5NzkyODkyMzY0ODAwMA.GalcQv.ELufFQoJuW0cVGCYrFl6R5yDyaJeyHKylE1gmE", "MTQ4Njg5NzkyODkyMzY0ODAwMA.GalcQv.ELufFQoJuW0cVGCYrFl6R5yDyaJeyHKylE1gmE")
+# Carrega variáveis de ambiente de um arquivo .env (útil para PC local)
+load_dotenv()
+
+# No Railway, você deve criar a variável DISCORD_TOKEN na aba 'Variables'
+TOKEN = os.getenv("DISCORD_TOKEN")
 PREFIX = "!"
 
 intents = discord.Intents.all()
@@ -53,9 +57,8 @@ async def on_ready():
         synced = await bot.tree.sync()
         print(f"✅ {len(synced)} slash commands sincronizados")
     except Exception as e:
-        print(f"❌ Erro: {e}")
+        print(f"❌ Erro na sincronização: {e}")
     print(f"🤖 {bot.user} online! Prefixo: {PREFIX}")
-
 
 @bot.event
 async def on_member_join(member):
@@ -76,7 +79,6 @@ async def on_member_join(member):
             e.set_author(name=member.guild.name, icon_url=member.guild.icon.url)
         await canal.send(embed=e)
 
-
 @bot.event
 async def on_member_remove(member):
     canal = discord.utils.get(member.guild.text_channels, name="boas-vindas")
@@ -88,7 +90,6 @@ async def on_member_remove(member):
             thumbnail=member.display_avatar.url
         )
         await canal.send(embed=e)
-
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -131,7 +132,6 @@ async def ban(ctx, member: discord.Member, *, motivo="Nenhum motivo informado"):
     e.add_field(name="📝 Motivo", value=motivo, inline=False)
     await ctx.send(embed=e)
 
-
 @bot.command(name="unban")
 @commands.has_permissions(ban_members=True)
 async def unban(ctx, *, usuario: str):
@@ -149,7 +149,6 @@ async def unban(ctx, *, usuario: str):
     e.add_field(name="🆔 ID", value=f"`{alvo.id}`", inline=True)
     await ctx.send(embed=e)
 
-
 @bot.command(name="banlist")
 @commands.has_permissions(ban_members=True)
 async def banlist(ctx):
@@ -159,7 +158,6 @@ async def banlist(ctx):
     lista = "\n".join([f"`{i+1}.` **{entry.user}** — {entry.reason or 'sem motivo'}" for i, entry in enumerate(bans[:20])])
     e = make_embed("📋 Lista de Bans", lista, COR_MOD, rodape=f"Total: {len(bans)} banido(s)")
     await ctx.send(embed=e)
-
 
 @bot.command(name="kick")
 @commands.has_permissions(kick_members=True)
@@ -180,7 +178,6 @@ async def kick(ctx, member: discord.Member, *, motivo="Nenhum motivo informado")
     e.add_field(name="📝 Motivo", value=motivo, inline=False)
     await ctx.send(embed=e)
 
-
 @bot.command(name="timeout", aliases=["mute"])
 @commands.has_permissions(moderate_members=True)
 async def timeout_cmd(ctx, member: discord.Member, minutos: int = 10, *, motivo="Sem motivo"):
@@ -191,7 +188,6 @@ async def timeout_cmd(ctx, member: discord.Member, minutos: int = 10, *, motivo=
     e.add_field(name="📝 Motivo", value=motivo, inline=False)
     await ctx.send(embed=e)
 
-
 @bot.command(name="untimeout", aliases=["unmute"])
 @commands.has_permissions(moderate_members=True)
 async def untimeout_cmd(ctx, member: discord.Member):
@@ -199,7 +195,6 @@ async def untimeout_cmd(ctx, member: discord.Member):
     e = make_embed("✅ Timeout Removido", cor=COR_SUCESSO, rodape=f"Por {ctx.author}")
     e.add_field(name="👤 Usuário", value=member.mention)
     await ctx.send(embed=e)
-
 
 @bot.command(name="warn")
 @commands.has_permissions(manage_messages=True)
@@ -214,7 +209,6 @@ async def warn(ctx, member: discord.Member, *, motivo="Sem motivo"):
     except:
         pass
 
-
 @bot.command(name="clear", aliases=["purge", "limpar"])
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx, quantidade: int = 10):
@@ -225,7 +219,6 @@ async def clear(ctx, quantidade: int = 10):
     await asyncio.sleep(4)
     await msg.delete()
 
-
 @bot.command(name="lock", aliases=["fechar"])
 @commands.has_permissions(manage_channels=True)
 async def lock(ctx, canal: discord.TextChannel = None):
@@ -234,7 +227,6 @@ async def lock(ctx, canal: discord.TextChannel = None):
     e = make_embed("🔒 Canal Bloqueado", f"{canal.mention} foi bloqueado para membros.", COR_ERRO, rodape=f"Por {ctx.author}")
     await ctx.send(embed=e)
 
-
 @bot.command(name="unlock", aliases=["abrir"])
 @commands.has_permissions(manage_channels=True)
 async def unlock(ctx, canal: discord.TextChannel = None):
@@ -242,7 +234,6 @@ async def unlock(ctx, canal: discord.TextChannel = None):
     await canal.set_permissions(ctx.guild.default_role, send_messages=True)
     e = make_embed("🔓 Canal Desbloqueado", f"{canal.mention} foi desbloqueado.", COR_SUCESSO, rodape=f"Por {ctx.author}")
     await ctx.send(embed=e)
-
 
 @bot.command(name="slowmode", aliases=["slow"])
 @commands.has_permissions(manage_channels=True)
@@ -253,7 +244,6 @@ async def slowmode(ctx, segundos: int = 0):
     else:
         e = make_embed("🐌 Slowmode Ativado", f"Slowmode de **{segundos}s** em {ctx.channel.mention}.", COR_AVISO)
     await ctx.send(embed=e)
-
 
 @bot.command(name="nick")
 @commands.has_permissions(manage_nicknames=True)
@@ -266,7 +256,6 @@ async def nick(ctx, member: discord.Member, *, novo_nick: str = None):
     e.add_field(name="Depois", value=novo_nick or member.name, inline=True)
     await ctx.send(embed=e)
 
-
 @bot.command(name="addrole", aliases=["darRole"])
 @commands.has_permissions(manage_roles=True)
 async def addrole(ctx, member: discord.Member, *, cargo: discord.Role):
@@ -275,7 +264,6 @@ async def addrole(ctx, member: discord.Member, *, cargo: discord.Role):
     e.add_field(name="👤 Usuário", value=member.mention, inline=True)
     e.add_field(name="🏷️ Cargo", value=cargo.mention, inline=True)
     await ctx.send(embed=e)
-
 
 @bot.command(name="removerole", aliases=["tirarRole"])
 @commands.has_permissions(manage_roles=True)
@@ -298,7 +286,6 @@ async def embed_cmd(ctx, titulo: str, *, descricao: str):
     await ctx.message.delete()
     await ctx.send(embed=e)
 
-
 @bot.command(name="anuncio")
 @commands.has_permissions(manage_messages=True)
 async def anuncio(ctx, *, texto: str):
@@ -308,7 +295,6 @@ async def anuncio(ctx, *, texto: str):
     e.set_footer(text=f"Anunciado por {ctx.author.display_name}", icon_url=ctx.author.display_avatar.url)
     await ctx.message.delete()
     await ctx.send("@everyone", embed=e)
-
 
 @bot.command(name="say", aliases=["falar"])
 @commands.has_permissions(manage_messages=True)
@@ -332,7 +318,6 @@ async def ping(ctx):
     e.add_field(name="Latência", value=f"`{latency}ms`", inline=True)
     e.add_field(name="Status", value=status, inline=True)
     await ctx.send(embed=e)
-
 
 @bot.command(name="userinfo", aliases=["ui", "perfil"])
 async def userinfo(ctx, member: discord.Member = None):
@@ -358,7 +343,6 @@ async def userinfo(ctx, member: discord.Member = None):
     e.add_field(name=f"🏷️ Cargos ({len(roles)})", value=" ".join(roles[:10]) if roles else "Nenhum", inline=False)
     await ctx.send(embed=e)
 
-
 @bot.command(name="serverinfo", aliases=["si", "servidor"])
 async def serverinfo(ctx):
     g       = ctx.guild
@@ -378,7 +362,6 @@ async def serverinfo(ctx):
     e.add_field(name="🚀 Boosts", value=f"`{g.premium_subscription_count}` (Nível {g.premium_tier})", inline=True)
     await ctx.send(embed=e)
 
-
 @bot.command(name="avatar", aliases=["av", "foto"])
 async def avatar(ctx, member: discord.Member = None):
     member = member or ctx.author
@@ -391,7 +374,6 @@ async def avatar(ctx, member: discord.Member = None):
     e.description = f"[Abrir em tamanho completo]({member.display_avatar.url})"
     await ctx.send(embed=e)
 
-
 @bot.command(name="banner")
 async def banner(ctx, member: discord.Member = None):
     member = member or ctx.author
@@ -401,7 +383,6 @@ async def banner(ctx, member: discord.Member = None):
     e = make_embed(titulo=f"🖼️ Banner de {member.display_name}", cor=COR_PRINCIPAL, imagem=user.banner.url)
     e.description = f"[Abrir em tamanho completo]({user.banner.url})"
     await ctx.send(embed=e)
-
 
 @bot.command(name="roleinfo", aliases=["cargoinfo"])
 async def roleinfo(ctx, *, cargo: discord.Role):
@@ -413,7 +394,6 @@ async def roleinfo(ctx, *, cargo: discord.Role):
     e.add_field(name="📌 Mencionável", value="✅" if cargo.mentionable else "❌", inline=True)
     e.add_field(name="📅 Criado em", value=f"<t:{int(cargo.created_at.timestamp())}:D>", inline=True)
     await ctx.send(embed=e)
-
 
 @bot.command(name="botinfo")
 async def botinfo(ctx):
@@ -455,7 +435,6 @@ async def lorota(ctx, member: discord.Member = None):
     e.set_footer(text="100% confiável | Fonte: confiei")
     await ctx.send(embed=e)
 
-
 @bot.command(name="dado", aliases=["dice", "rolar"])
 async def dado(ctx, lados: int = 6):
     if lados < 2:
@@ -463,7 +442,6 @@ async def dado(ctx, lados: int = 6):
     resultado = random.randint(1, lados)
     e = make_embed("🎲 Dado Rolado", f"Você rolou um **d{lados}** e tirou...\n# {resultado}", COR_PRINCIPAL)
     await ctx.send(embed=e)
-
 
 @bot.command(name="8ball", aliases=["bola"])
 async def ball8(ctx, *, pergunta: str):
@@ -482,14 +460,12 @@ async def ball8(ctx, *, pergunta: str):
     e.add_field(name="🔮 Resposta", value=f"**{resposta}**", inline=False)
     await ctx.send(embed=e)
 
-
 @bot.command(name="coinflip", aliases=["moeda"])
 async def coinflip(ctx):
     resultado = random.choice(["Cara", "Coroa"])
-    emoji     = "🌕" if resultado == "Cara" else "⭐"
+    emoji      = "🌕" if resultado == "Cara" else "⭐"
     e = make_embed(f"{emoji} {resultado}!", f"A moeda caiu em **{resultado}**!", COR_GOLD)
     await ctx.send(embed=e)
-
 
 @bot.command(name="ship")
 async def ship(ctx, user1: discord.Member, user2: discord.Member = None):
@@ -506,7 +482,6 @@ async def ship(ctx, user1: discord.Member, user2: discord.Member = None):
     e.description = f"**{user1.display_name}** 💕 **{user2.display_name}**\n\n{barra}\n**{porcento}%** — {comentario}"
     await ctx.send(embed=e)
 
-
 @bot.command(name="pp")
 async def pp(ctx, member: discord.Member = None):
     member  = member or ctx.author
@@ -517,18 +492,15 @@ async def pp(ctx, member: discord.Member = None):
     e.set_footer(text="Medição 100% científica | não nos responsabilizamos")
     await ctx.send(embed=e)
 
-
 @bot.command(name="abraco", aliases=["hug"])
 async def abraco(ctx, member: discord.Member):
     e = make_embed("🤗 Abraço!", f"**{ctx.author.display_name}** deu um abraço em **{member.display_name}**! 💖", COR_FUN)
     await ctx.send(embed=e)
 
-
 @bot.command(name="tapa", aliases=["slap"])
 async def tapa(ctx, member: discord.Member):
     e = make_embed("👋 TAPA!", f"**{ctx.author.display_name}** deu um tapa em **{member.display_name}**! 😤", COR_ERRO)
     await ctx.send(embed=e)
-
 
 @bot.command(name="rps", aliases=["pedra"])
 async def rps(ctx, escolha: str):
@@ -550,7 +522,6 @@ async def rps(ctx, escolha: str):
     e.add_field(name="Você", value=f"{emojis[escolha]} {escolha.title()}", inline=True)
     e.add_field(name="Bot", value=f"{emojis[bot_escolha]} {bot_escolha.title()}", inline=True)
     await ctx.send(embed=e)
-
 
 @bot.command(name="random", aliases=["aleatorio"])
 async def random_num(ctx, minimo: int = 1, maximo: int = 100):
@@ -596,6 +567,15 @@ async def help_cmd(ctx):
     await ctx.send(embed=e)
 
 # ══════════════════════════════════════════
-#  START
+#  START (SEGURO PARA 24 HORAS)
 # ══════════════════════════════════════════
-bot.run(TOKEN)
+if __name__ == "__main__":
+    if TOKEN:
+        try:
+            bot.run(TOKEN)
+        except discord.errors.LoginFailure:
+            print("❌ ERRO: O Token fornecido é inválido!")
+        except Exception as e:
+            print(f"❌ Ocorreu um erro ao iniciar o bot: {e}")
+    else:
+        print("❌ ERRO: Variável 'DISCORD_TOKEN' não encontrada nas configurações!")
