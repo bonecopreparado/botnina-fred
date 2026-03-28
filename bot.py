@@ -4,11 +4,12 @@ import random
 import asyncio
 import datetime
 import os
+from dotenv import load_dotenv
 
 # ══════════════════════════════════════════
 #  CONFIGURAÇÃO
 # ══════════════════════════════════════════
-TOKEN  = os.getenv("DISCORD_TOKEN", "SEU_TOKEN_AQUI")
+TOKEN  = os.getenv("MTQ4Njg5NzkyODkyMzY0ODAwMA.GalcQv.ELufFQoJuW0cVGCYrFl6R5yDyaJeyHKylE1gmE", "MTQ4Njg5NzkyODkyMzY0ODAwMA.GalcQv.ELufFQoJuW0cVGCYrFl6R5yDyaJeyHKylE1gmE")
 PREFIX = "!"
 
 intents = discord.Intents.all()
